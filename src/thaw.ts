@@ -28,12 +28,12 @@ const getPreMintTotal = async(pool: Pool<Client>) => {
         const res =
       await client.query(`SELECT
             COUNT(*)::INTEGER AS total_nfts,
-            sentry_owner_address
-          FROM sentries_vest
-          GROUP BY sentry_owner_address`)
+            nft_owner_address
+          FROM nfts_vest
+          GROUP BY nft_owner_address`)
     for await(const row of res) {
       result.push({
-        address: row.get('sentry_owner_address') as string,
+        address: row.get('nft_owner_address') as string,
         totalAllocation: row.get('total_nfts') as number
       })
     }
@@ -53,14 +53,14 @@ const getThawedTotals = async(pool: Pool<Client>) => {
         const res =
       await client.query(`SELECT
             COUNT(*)::INTEGER AS thawed_allocation,
-            sentry_owner_address
-          FROM sentries_vest
-          WHERE sentry_vest_thawed = TRUE 
-          AND sentry_vest_thawed_time IS NOT NULL
-          GROUP BY sentry_owner_address;`)
+            nft_owner_address
+          FROM nfts_vest
+          WHERE nft_vest_thawed = TRUE 
+          AND nft_vest_thawed_time IS NOT NULL
+          GROUP BY nft_owner_address;`)
       for await(const row of res) {
         result.push({
-          address: row.get('sentry_owner_address') as string,
+          address: row.get('nft_owner_address') as string,
           thawedAllocation: row.get('thawed_allocation') as number
         })
       }
@@ -79,17 +79,17 @@ const getRandomNfts = async(pool: Pool<Client>, address: string, limit: number) 
   try {
     const res = await client.query(`
       SELECT
-        sentry_owner_address,
-        sentry_address
-      FROM sentries_vest
-      WHERE sentry_owner_address = '${address}'
-        AND sentry_vest_thawed = FALSE 
-        AND sentry_vest_thawed_time IS NULL
+        nft_owner_address,
+        nft_address
+      FROM nfts_vest
+      WHERE nft_owner_address = '${address}'
+        AND nft_vest_thawed = FALSE 
+        AND nft_vest_thawed_time IS NULL
       ORDER BY RANDOM () LIMIT ${limit};
     `)
     for await(const row of res) {
       result.push(
-        row.get('sentry_address') as string
+        row.get('nft_address') as string
       )
     }
     return result

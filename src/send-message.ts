@@ -65,21 +65,21 @@ const getUnsentThawedNfts = async() => {
   try {
     const response = client.query(
       `SELECT
-        sentries_vest.sentry_address,
-        sentries_vest.sentry_owner_address,
-        sentries.sentry_name
-      FROM sentries_vest
-      LEFT JOIN sentries ON sentries.sentry_address = sentries_vest.sentry_address
-      WHERE sentry_vest_message_sent IS FALSE
-      AND sentry_vest_thawed_time IS NOT NULL
-      AND sentry_vest_thawed IS TRUE
+        nfts_vest.nft_address,
+        nfts_vest.nft_owner_address,
+        nfts.nft_name
+      FROM nfts_vest
+      LEFT JOIN nfts ON nfts.nft_address = nfts_vest.nft_address
+      WHERE nft_vest_message_sent IS FALSE
+      AND nft_vest_thawed_time IS NOT NULL
+      AND nft_vest_thawed IS TRUE
       `
     )
     for await (const row of response) {
       hashlist.push({ 
-        mintAddress: row.get('sentry_address') as string,
-        ownerAddress: row.get('sentry_owner_address') as string,
-        nftName: row.get('sentry_name') as string
+        mintAddress: row.get('nft_address') as string,
+        ownerAddress: row.get('nft_owner_address') as string,
+        nftName: row.get('nft_name') as string
       })
     }
     return hashlist
@@ -95,10 +95,10 @@ const updateMessageSent = async(mintAddress: string) => {
   try {
     const query = new Query(
       `UPDATE
-        sentries_vest
+        nfts_vest
       SET
-        sentry_vest_message_sent = TRUE::BOOLEAN
-      WHERE sentry_address = '${mintAddress}';`
+        nft_vest_message_sent = TRUE::BOOLEAN
+      WHERE nft_address = '${mintAddress}';`
     )
     await client.execute(query);
     return true
