@@ -159,6 +159,18 @@ const main = async () =>{
     }
     await setTimeout(TIMEOUT)
   }
+  return
 }
 
-main()
+(async () => {
+  try {
+    await main()
+  } catch (e) {
+    console.log(e)
+  } finally {
+    pool.drain().then(function() {
+      pool.clear()
+    })
+    return
+  }
+})()

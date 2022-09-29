@@ -70,7 +70,7 @@ const getThawedTotals = async(pool: Pool<Client>) => {
     throw e
   } finally {
     pool.release(client)
-  } 
+  }
 }
 
 const getRandomNfts = async(pool: Pool<Client>, address: string, limit: number) => {
@@ -113,7 +113,7 @@ const main = async(pool: Pool<Client>) => {
   let daysBetween = differenceInCalendarDays(currentDateMod, startDateMod) + 1
 
   if(daysBetween >= 30) {
-    throw `Dump the remainder, we're on the last day or past!`
+    //throw `Dump the remainder, we're on the last day or past!`
   } else {
     if(currentDateMod < startDateMod) {
       console.error(`Not time to start thawing!`)
@@ -185,5 +185,10 @@ const main = async(pool: Pool<Client>) => {
       await main(pool)
     } catch (e) {
       console.log(e)
+    } finally {
+      pool.drain().then(function() {
+        pool.clear()
+      })
+      return
     }
 })()
